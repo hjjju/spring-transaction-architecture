@@ -1,57 +1,34 @@
-
----
-
-# spring-transaction-architecture README
-
-```markdown
 # Spring Transaction Architecture
 
-Example project demonstrating transaction boundary design using Spring Transaction Propagation.
+Example project demonstrating transaction boundary design in Spring Boot services.
 
 ---
 
 ## Problem
 
-In many systems, a single transaction handles multiple operations.
+During production operations, certain service processes contained both
+core data operations and secondary processing within a single transaction.
 
-Example:
+If a secondary process failed, the entire transaction was rolled back,
+including critical data operations.
 
-Service Transaction
-
-- Save Main Data
-- Send Notification
-- Logging
-
-If the notification step fails, the entire transaction rolls back.
-
-This can cause critical data loss.
+This increased the impact scope of failures in production environments.
 
 ---
 
 ## Solution
 
-Separate transaction boundaries using Spring Transaction Propagation.
+The service structure was redesigned to separate transaction boundaries.
 
-Before:
+Core data operations remained in the main transaction,
+while secondary processes were executed in independent transactions.
 
-Service Transaction  
-├ Save Data  
-└ Send Notification  
-   → failure causes rollback  
-
-After:
-
-Service  
-├ Transaction  
-│  └ Save Data  
-└ New Transaction  
-   └ Send Notification  
+This was implemented using Spring Transaction Propagation.
 
 ---
 
-## Key Concepts
+## Result
 
-### Transaction Propagation
-
-Using:
-
+- Reduced the impact scope of failures
+- Improved production system stability
+- Allowed non-critical processes to fail without affecting core data operations
